@@ -27,7 +27,7 @@ shape_score(rock, 1).
 shape_score(paper, 2).
 shape_score(scissors, 3).
 
-round_score(round(Opponent, Us), Score) :-
+round_score(round(Opponent, Us, Outcome), Score) :-
     shape_score(Us, ShapeScore),
     outcome(Us, Opponent, Outcome),
     score(Outcome, OutcomeScore),
@@ -38,7 +38,7 @@ round_score(round(Opponent, Us), Score) :-
 parse_line_part1(Line, Round) :-
     split_string(Line, " ", "", Chars),
     maplist(decode, Chars, [Opponent, Us]),
-    Round = round(Opponent, Us).
+    Round = round(Opponent, Us, _).
 
 read_input_part1(File, Rounds) :-
     open(File, read, Stream),
@@ -60,20 +60,14 @@ parse_line_part2(Line, Round) :-
     split_string(Line, " ", "", [OpponentS, OutcomeS]),
     decode(OpponentS, Opponent),
     decode_outcome_part2(OutcomeS, Outcome),
-    Round = round_part2(Opponent, Outcome).
+    Round = round(Opponent, _, Outcome).
 
 read_input_part2(File, Rounds) :-
     open(File, read, Stream),
     read_lines(Stream, Lines),
     maplist(parse_line_part2, Lines, Rounds).
 
-round_score_part2(round_part2(Opponent, Outcome), Score) :-
-    outcome(Us, Opponent, Outcome),
-    score(Outcome, OutcomeScore),
-    shape_score(Us, ShapeScore),
-    Score #= ShapeScore + OutcomeScore.
-
 solution_part2(File, Solution) :-
     read_input_part2(File, Rounds),
-    maplist(round_score_part2, Rounds, Scores),
+    maplist(round_score, Rounds, Scores),
     sum_list(Scores, Solution).
