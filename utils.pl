@@ -6,7 +6,8 @@
                   string_phrase/2,
                   string_phrase/3,
                   phrase_file/2,
-                  lazy_sequence/5
+                  lazy_sequence/5,
+                  chunks/3
                  ]).
 :- use_module(library(clpfd)).
 
@@ -62,3 +63,10 @@ lazy_sequence(Element, Sep, [X | Xs]) -->
     call(Element, X),
     Sep,
     lazy_sequence(Element, Sep, Xs).
+
+chunks(Len, List, [Chunk | Chunks]) :-
+   append(Chunk, Rest, List),
+   length(Chunk, Len),
+   chunks(Len, Rest, Chunks),
+   !.
+chunks(_, _, []).
