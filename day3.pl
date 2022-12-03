@@ -17,15 +17,13 @@ common_item(C1 - C2, Common) :-
 
 priority(Item, Priority) :-
     char_code(Item, Code),
-    % a-z
-    Code in 97..122,
-    Priority #= Code - 96.
-
-priority(Item, Priority) :-
-    char_code(Item, Code),
-    % A-Z
-    Code in 65..90,
-    Priority #= Code - 65 + 27.
+    (  % a-z
+       Code in 97..122
+    -> Priority #= Code - 96
+       % A-Z
+    ;  Code in 65..90
+    -> Priority #= Code - 65 + 27
+    ).
 
 read_input(File, Rucksacks) :-
     open(File, read, Stream),
