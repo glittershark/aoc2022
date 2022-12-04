@@ -42,8 +42,12 @@ times(N, G, Sep, [X | Xs]) -->
        string_phrase(//, ?),
        string_phrase(//, ?, ?).
 string_phrase(RuleSet, InputString) :-
+   ground(InputString),
    string_codes(InputString, Input),
    phrase(RuleSet, Input).
+string_phrase(RuleSet, InputString) :-
+   phrase(RuleSet, Input),
+   string_codes(InputString, Input).
 string_phrase(RuleSet, InputString, RestString) :-
    string_codes(InputString, Input),
    phrase(RuleSet, Input, RestCodes),
