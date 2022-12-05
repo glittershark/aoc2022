@@ -53,11 +53,17 @@ string_phrase(RuleSet, InputString, RestString) :-
    phrase(RuleSet, Input, RestCodes),
    string_codes(RestString, RestCodes).
 
-:- meta_predicate phrase_file(//, +).
+:- meta_predicate
+       phrase_file(//, +),
+       phrase_file(//, +, ?).
 phrase_file(RuleSet, File) :-
    open(File, read, Stream),
    read_string(Stream, _, String),
    string_phrase(RuleSet, String).
+phrase_file(RuleSet, File, Rest) :-
+   open(File, read, Stream),
+   read_string(Stream, _, String),
+   string_phrase(RuleSet, String, Rest).
 
 
 :- meta_predicate lazy_sequence(:, :, ?).
