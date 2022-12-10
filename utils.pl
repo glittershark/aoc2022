@@ -80,3 +80,6 @@ chunks(Len, List, [Chunk | Chunks]) :-
    chunks(Len, Rest, Chunks),
    !.
 chunks(_, _, []).
+
+
+last(L, Elem) :- reverse(L, [Elem | _]).
