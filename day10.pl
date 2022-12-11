@@ -81,3 +81,62 @@ sum_interesting_cycles(Program, Sum) :-
 solution_part1(File, Solution) :-
     phrase_file(instructions(Program), File), !,
     sum_interesting_cycles(Program, Solution).
+
+%%%
+
+x_within_sprite(X, X).
+x_within_sprite(X, Sprite) :-
+    ( X #= Sprite - 1
+    ; X #= Sprite + 1
+    ).
+
+position_within_sprite(X - _, Sprite) :-
+    % Our positions are 1-based, Sprites are 0-based
+    Sprite_1 #= Sprite + 1,
+    x_within_sprite(X, Sprite_1).
+
+cycle_position(Cycle, X - Y) :-
+    X #= ((Cycle - 1) mod 40) + 1,
+    Y #= (Cycle div 40) + 1.
+
+write_matrix(M1, X - Y, Val, M2) :-
+    nth1(Y, M1, Row1),
+    replace1(Row1, X, Val, Row2),
+    replace1(M1, Y, Row2, M2).
+
+maybe_draw(state(_, X, _, Cycle), CRT1, CRT2) :-
+    cycle_position(Cycle, Pos),
+    (  position_within_sprite(Pos, X)
+    -> write_matrix(CRT1, Pos, '#', CRT2)
+    ;  CRT2 = CRT1
+    ).
+
+initial_crt(CRT) :-
+    length(CRT, 6),
+    length(Row, 40),
+    maplist(=('.'), Row),
+    maplist(=(Row), CRT).
+
+render_crt(CRT, Rendered) :-
+    maplist(atomics_to_string, CRT, Rows),
+    string_lines(Rendered, Rows).
+
+step_with_crt(
+    State1 - CRT1,
+    State2 - CRT2
+) :-
+    maybe_draw(State1, CRT1, CRT2),
+    step(State1, State2).
+
+run_until_done_with_crt(State - CRT, State - CRT) :- done(State), !.
+run_until_done_with_crt(S1, S_omega) :-
+    step_with_crt(S1, S2),
+    run_until_done_with_crt(S2, S_omega).
+
+run_part2(File) :-
+    phrase_file(instructions(Program), File), !,
+    initial_state(Program, State),
+    initial_crt(CRT1),
+    run_until_done_with_crt(State - CRT1, _ - CRT),
+    render_crt(CRT, Rendered),
+    write(Rendered).

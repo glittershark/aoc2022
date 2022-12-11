@@ -8,7 +8,9 @@
                   phrase_file/2,
                   phrase_file/3,
                   lazy_sequence/5,
-                  chunks/3
+
+                  chunks/3,
+                  replace1/4
                  ]).
 :- use_module(library(clpfd)).
 
@@ -67,7 +69,7 @@ phrase_file(RuleSet, File, Rest) :-
    string_phrase(RuleSet, String, Rest).
 
 
-:- meta_predicate lazy_sequence(:, :, ?).
+:- meta_predicate lazy_sequence(:, :, ?, ?, ?).
 lazy_sequence(_, _, []) --> [].
 lazy_sequence(Element, _, [X]) --> call(Element, X).
 lazy_sequence(Element, Sep, [X | Xs]) -->
@@ -82,5 +84,21 @@ chunks(Len, List, [Chunk | Chunks]) :-
    !.
 chunks(_, _, []).
 
+% unify R with L, except replacing the value at position P (1-based) with E
+replace1(L, P, E, R) :-
+    PreLen is P - 1,
+    length(Pre, PreLen),
+    append(Pre, [_|T], L),
+    append(Pre, [E|T], R).
 
-last(L, Elem) :- reverse(L, [Elem | _]).
+%%%
+
+:- begin_tests(utils).
+
+test(replace) :-
+   replace1([a,b,c], 1, a2, [a2,b,c]),
+   replace1([a,b,c], 2, b2, [a,b2,c]),
+   replace1([a,b,c], 3, c2, [a,b,c2]),
+   \+ replace1([a,b,c], 4, d2, _).
+
+:- end_tests(utils).
