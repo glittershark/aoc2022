@@ -6,6 +6,7 @@
                   string_phrase/2,
                   string_phrase/3,
                   phrase_file/2,
+                  phrase_file/3,
                   lazy_sequence/5,
                   chunks/3
                  ]).
