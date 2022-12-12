@@ -10,7 +10,8 @@
                   lazy_sequence/5,
 
                   chunks/3,
-                  replace1/4
+                  replace1/4,
+                  list_product/2
                  ]).
 :- use_module(library(clpfd)).
 
@@ -91,6 +92,11 @@ replace1(L, P, E, R) :-
     append(Pre, [_|T], L),
     append(Pre, [E|T], R).
 
+list_product([], 1).
+list_product([X | Xs], P) :-
+   list_product(Xs, XsP),
+   P #= XsP * X.
+
 %%%
 
 :- begin_tests(utils).
@@ -100,5 +106,9 @@ test(replace) :-
    replace1([a,b,c], 2, b2, [a,b2,c]),
    replace1([a,b,c], 3, c2, [a,b,c2]),
    \+ replace1([a,b,c], 4, d2, _).
+
+test(list_product) :-
+   list_product([1234], 1234),
+   list_product([1, 2, 3, 4], 24).
 
 :- end_tests(utils).

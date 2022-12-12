@@ -100,7 +100,8 @@ inspect(Part, Monkey, Item1, ThrowTo - Item) :-
     eval(Operation, Item1, Item2),
     (  Part = part1
     -> Item is Item2 div 3
-    ;  Item = Item2
+    ;  Part = part2(Modulus)
+    -> Item is Item2 mod Modulus
     ),
     monkey_test(Monkey, Test),
     (  test(Test, Item)
@@ -176,9 +177,21 @@ solution_part1(File, Solution) :-
     write_activity(Monkeys1),
     monkey_business(Monkeys1, Solution).
 
+%%%
+
+worry_modulus(Monkeys, Modulus) :-
+    assoc_to_values(Monkeys, Ms),
+    maplist(
+        [Monkey, TestNum] >> monkey_test(Monkey, divisible(TestNum)),
+        Ms,
+        TestNums
+    ),
+    list_product(TestNums, Modulus).
+
 solution_part2(File, Solution) :-
     read_monkeys(File, Monkeys),
-    rounds(part2, 21, Monkeys, Monkeys1),
+    worry_modulus(Monkeys, Modulus),
+    rounds(part2(Modulus), 10000, Monkeys, Monkeys1),
     write_items(Monkeys1),
     write_activity(Monkeys1),
     monkey_business(Monkeys1, Solution).
